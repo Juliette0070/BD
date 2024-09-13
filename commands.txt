@@ -1,0 +1,15 @@
+TERMINAL 1:
+ssh -J o22202319@acces-tp.iut45.univ-orleans.fr -o StrictHostKeyChecking=no o22202319@172.16.2.131
+mdp: 76nuaB
+sudo neo4j start
+curl http://0.0.0.0:7474
+(sudo neo4j stop)
+
+TERMINAL 2:
+ssh -L 7474:172.16.2.131:7474 -L 7687:172.16.2.131:7687 -N o22202319@acces-tp.iut45.univ-orleans.fr
+(CTRL-Z et puis bg)
+
+NAVIGATEUR:
+localhost:7474
+username: neo4j
+mdp: neo4jpw4neo4j
