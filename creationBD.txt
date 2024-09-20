@@ -84,3 +84,5 @@ MERGE (d:Director {name: director})
 MERGE (b:BoxOffice)
 CREATE (m)-[:DIRECTED_BY]->(d)
 CREATE (m)-[:HAS_BOXOFFICE {boxOffice: boxOffice}]->(b)
+
+call db.schema.visualization()
