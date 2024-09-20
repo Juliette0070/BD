@@ -59,6 +59,8 @@ match
 (cat:Categorie)
 return c,p,cat
 
+match (n) return N
+
 match
 (c:Client),
 (p:Produit),
@@ -66,3 +68,5 @@ match
 (a:Acheter),
 (i:Is)
 delete c,p,cat,a,i
+
+match (n) detach delete n
