@@ -1,0 +1,74 @@
+1)
+match (d:Drinker) return d
+
+2)
+match (d:Drinker) return d.name
+
+3)
+match (d:Drinker) return id(d)
+
+4)
+match (d1:Drinker)-[f:FriendOf]-(d2:Drinker) return *
+
+5)
+match (d1:Drinker)-[f:FriendOf]-(d2:Drinker) return id(d1), id(d2), id(f)
+
+6)
+match (d1:Drinker)-[f:FriendOf*]-(d2:Drinker) return d1.name, d2.name
+
+7)
+match (b:Beer {type:"pilsen"}) return *
+
+8)
+match (d1:Drinker)-[f:FriendOf*]-(d2:Drinker) return d1.name, d2.name
+
+9)
+match (d:Drinker)-[l:Likes]->(b:Beer {name:"Corona"}) return d.name
+
+10)
+match (a:Bar {city:"Paris"}) return a.name
+
+11)
+match (a:Bar {city:"Paris"})-[s:Sells]->(b:Beer {name:"Corona"}) return a.name
+
+12)
+match (a:Bar {city:"Paris"})-[s:Sells]->(b:Beer) where b.name="Corona" or b.name="Antactica" return a.name
+
+13)
+match (d:Drinker {sexe:"F"})-[g:Goes]->(a:Bar {city:"Paris"}) return d.name
+
+14)
+match (b:Beer {name:"Bohemia"})<-[l:Likes]-(d:Drinker {sexe:"F"})-[g:Goes]->(a:Bar {city:"Paris"}) return d.name
+
+15)
+match (a:Bar) where a.rating_service>3 or a.rating_hygiene>3 return a.name
+
+16)
+match (a:Bar) return a.name, (a.rating_service+a.rating_hygiene)/2
+
+17)
+match (a:Bar) where (a.rating_service+a.rating_hygiene)/2>4 return a.name
+
+18)
+match (d:Drinker) return d.name order by d.age, d.sexe
+
+19)
+match (d:Drinker)-[g:Goes]->(a:Bar) return d.name, a.name order by g.startYear
+
+20)
+match (d:Drinker)-[g:Goes {startYear:2022}]->(a:Bar) return d.name
+
+21)
+match (d1:Drinker)-[g1:Goes]->(a:Bar)<-[g2:Goes]-(d2:Drinker) return d1.name, d2.name, a.name
+
+22)
+match (b:Beer {name:"Antactica"})<-[l:Likes]-(d1:Drinker)<-[f:FriendOf*]-(d2:Drinker) return d2.name
+
+23)
+match (a:Bar {name:"Brazil"})<-[g:Goes]-(d1:Drinker)<-[f:FriendOf]-(d2:Drinker) return d2.name
+
+24)
+match path = (a:Bar {name:"Brazil"})<-[g:Goes]-(d1:Drinker)<-[f:FriendOf]-(d2:Drinker) return d2.name, path
+
+25)
+MATCH (d:Drinker) WHERE d.name =~ 'B.*b.*' RETURN d.name
