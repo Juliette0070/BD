@@ -1,0 +1,19 @@
+match (n) return n
+
+match (n) detach delete n
+
+call db.schema.visualization()
+
+LOAD CSV WITH HEADERS FROM 'file:///Movie.csv' AS movie
+WITH movie WHERE movie.boxOffice IS NOT NULL AND movie.class IS NOT NULL
+WITH toInteger(movie.idMovie) AS idMovie,
+movie.movieName AS movieName,
+toInteger(movie.boxOffice) AS boxOffice,
+movie.class AS class,
+toInteger(movie.year) AS year,
+movie.director AS director
+CREATE (m:Movie {idMovie : idMovie,title : movieName, class:class, year:year})
+MERGE (d:Director {name: director})
+MERGE (b:BoxOffice)
+CREATE (m)-[:DIRECTED_BY]->(d)
+CREATE (m)-[:HAS_BOXOFFICE {boxOffice: boxOffice}]->(b)

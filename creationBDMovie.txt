@@ -52,37 +52,3 @@ create
 (c5)-[v8:Voir {nb_clicks:"6"}]->(p6)
 
 return c1,c2,c3,c4,c5,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,cat1,cat2,cat3,cat4
-
-match
-(c:Client),
-(p:Produit),
-(cat:Categorie)
-return c,p,cat
-
-match (n) return n
-
-match
-(c:Client),
-(p:Produit),
-(cat:Categorie),
-(a:Acheter),
-(i:Is)
-delete c,p,cat,a,i
-
-match (n) detach delete n
-
-LOAD CSV WITH HEADERS FROM 'file:///Movie.csv' AS movie
-WITH movie WHERE movie.boxOffice IS NOT NULL AND movie.class IS NOT NULL
-WITH toInteger(movie.idMovie) AS idMovie,
-movie.movieName AS movieName,
-toInteger(movie.boxOffice) AS boxOffice,
-movie.class AS class,
-toInteger(movie.year) AS year,
-movie.director AS director
-CREATE (m:Movie {idMovie : idMovie,title : movieName, class:class, year:year})
-MERGE (d:Director {name: director})
-MERGE (b:BoxOffice)
-CREATE (m)-[:DIRECTED_BY]->(d)
-CREATE (m)-[:HAS_BOXOFFICE {boxOffice: boxOffice}]->(b)
-
-call db.schema.visualization()
