@@ -1,0 +1,44 @@
+1)
+match (u1:User)-[f:FOLLOWS]->(u2:User {name: 'Neo4J'}) return id(u1), u1.name
+
+2)
+match (u1:User)-[f:FOLLOWS]->(u2:User {name: 'Neo4J'}) return u1.location
+
+3)
+match (u:User) where u.location contains 'France' return u.name, u.location
+
+4)
+match (t:Tweet)-[a:TAGS]->(h:Hashtag {name: 'apoc'}) return t.text
+
+5)
+match (t:Tweet)-[u:USING]->(s:Source {name: 'Twitter Web App'}) return t.text
+
+6)
+match (u:User) where u.location contains 'England' return count(u), u.location
+
+7)
+match (t:Tweet) where toLower(t.text) CONTAINS 'neo4j' and datetime('2021-01-01T00:00:00.000+0100')< t.created_at < datetime('2021-6-30T23:59:59.999+0100') return t.text
+
+8)
+match (u:User {name: 'Neo4J'})-[p:POSTS]->(t:Tweet) return count(t), t.created_at.year, t.created_at.month order by count(t), t.created_at.year, t.created_at.month
+
+9)
+match (u:User) return u order by u.followers desc limit 1
+
+10)
+match (u:User)-[p:POSTS]->(t:Tweet) return sum(t.favorites)
+
+11)
+match (u:User) where toLower(u.name) starts with 'e' return u.name order by u.name
+
+12)
+match (u:User) where not toLower(u.name) ends with 'd' return u.name
+
+13)
+match (l:Link) where l.url =~ 'http.*github.*' return l.url
+
+14)
+match (u1:User {name: 'Neo4J'})-[f:FOLLOWS]->(u2:User) where u2.name = 'Pierre Lindenbaum' or u2.name = 'Michael Hunger' or u2.name = 'Peter Weber' return u2
+
+15)
+match (u1:User) where not (u1)-[:FOLLOWS]->(:User {name: 'Neo4J'}) return u1.name
