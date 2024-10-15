@@ -34,4 +34,13 @@ match (u:User) optional match (u)-[:POSTS]->(t:Tweet)-[:CONTAINS]->(l:Link) wher
 match (u1:User) optional match path = (u1)-[:FOLLOWS]->(u2:User {name: 'Neo4J'}) return u1.name, path is not null as follows_neo4j
 
 12)
-match (t:Tweet)-[:USING]->(s:Source) where s.name IN ['Twitter for iPhone', 'TweetDeck', 'TweetApp'] return id(t), t.text
+match (t:Tweet)-[:USING]->(s:Source) where s.name in ['Twitter for iPhone', 'TweetDeck', 'TweetApp'] return id(t), t.text
+
+13)
+match (u1:User) where count{(u1:User)<-[f:FOLLOWS]-(u2:User)}>2 and (u1:User)-[:POSTS]->(:Tweet)-[:TAGS]->(:Hashtag {name: 'ml'})  return u1.name, count{(u1:User)<-[f:FOLLOWS]-(u2:User)} as nb_followers
+
+14) rien au dessus de 5000 followers, plus haut à 7 followers
+match (u1:User), (u1:User)-[:POSTS]->(t:Tweet)-[:TAGS]->(h:Hashtag) where count{(u1:User)<-[f:FOLLOWS]-(u2:User)}>5000 return u1.name, collect([id(t), h.name]) as tweets_hashtags
+
+15)
+match (u:User) where u.name in ['Pierre Lindenbaum', 'Michael Hunger', 'Eva Agrawal'] set u.domain = 'DS' return u.name, u.domain
