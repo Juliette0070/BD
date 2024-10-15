@@ -1,79 +1,64 @@
-CREATE 
+CREATE
 
-(u1:User {nom:"Ouioui" }),
-(u2:User {nom:"Nonnon" }),
-(u3:User {nom:"Bernie" }),
-(u4:User {nom:"Crevette" }),
-(u5:User {nom:"Tristoune" }),
-(u6:User {nom:"Voldi" }),
-(u7:User {nom:"Chaussette" }),
-(u8:User {nom:"Dora" }),
+(u1:User {nom:"Ouioui"}), (u2:User {nom:"Nonnon"}), (u3:User {nom:"Bernie"}), (u4:User {nom:"Crevette"}), (u5:User {nom:"Tristoune"}), (u6:User {nom:"Voldi"}), (u7:User {nom:"Chaussette"}), (u8:User {nom:"Dora"}),
 
-(c1:Company {nom:"Entreprise1"}),
-(c2:Company {nom:"Entreprise2"}),
-(c3:Company {nom:"Entreprise3"}),
+(c1:Company {nom:"Entreprise1"}), (c2:Company {nom:"Entreprise2"}), (c3:Company {nom:"Entreprise3"}),
+ 
+(t1:Topic {nom:"Java" }), (t2:Topic {nom:"Neo4J" }), (t3:Topic {nom:"SQL" }), (t4:Topic {nom:"Python" }), (t5:Topic {nom:"REST" }), (t6:Topic {nom:"Chat" }), (t7:Topic {nom:"Chien" }), (t8:Topic {nom:"Pigeon" }), (t9:Topic {nom:"Alcool" }), (t10:Topic {nom:"Musique" }),
 
-(t1:Topic {nom:"Java" }),
-(t2:Topic {nom:"Neo4J" }),
-(t3:Topic {nom:"SQL" }),
-(t4:Topic {nom:"Python" }),
-(t5:Topic {nom:"REST" }),
-(t6:Topic {nom:"Chat" }),
-(t7:Topic {nom:"Chien" }),
-(t8:Topic {nom:"Pigeon" }),
-(t9:Topic {nom:"Alcool" }),
-(t10:Topic {nom:"Musique" }),
+(p1:Project {nom:"SAE1.01"}), (p2:Project {nom:"SAE1.02"}), (p3:Project {nom:"SAE1.03"}), (p4:Project {nom:"SAE2.01"}), (p5:Project {nom:"SAE2.02"}), (p6:Project {nom:"SAE3.01"}),
 
-(p1:Project {nom:"SAE1.01"}),
-(p2:Project {nom:"SAE1.02"}),
-(p3:Project {nom:"SAE1.03"}),
-(p4:Project {nom:"SAE2.01"}),
-(p5:Project {nom:"SAE2.02"}),
-(p6:Project {nom:"SAE3.01"}),
+(u1)-[:Works_for]->(c1), (u2)-[:Works_for]->(c2), (u3)-[:Works_for]->(c1), (u4)-[:Works_for]->(c2), (u5)-[:Works_for]->(c3), (u6)-[:Works_for]->(c1), (u7)-[:Works_for]->(c3), (u8)-[:Works_for]->(c2),
 
-(u1)-[:Works_for]->(c1),
-(u2)-[:Works_for]->(c2),
-(u3)-[:Works_for]->(c1),
-(u4)-[:Works_for]->(c2),
-(u5)-[:Works_for]->(c3),
-(u6)-[:Works_for]->(c1),
-(u7)-[:Works_for]->(c3),
-(u8)-[:Works_for]->(c2),
+(u1)-[:Interested_in]->(t1), (u1)-[:Interested_in]->(t9), (u2)-[:Interested_in]->(t10), (u4)-[:Interested_in]->(t7), (u4)-[:Interested_in]->(t6), (u4)-[:Interested_in]->(t5), (u5)-[:Interested_in]->(t3), (u5)-[:Interested_in]->(t1), (u6)-[:Interested_in]->(t9), (u6)-[:Interested_in]->(t1), (u7)-[:Interested_in]->(t9), (u7)-[:Interested_in]->(t1), (u8)-[:Interested_in]->(t9), (u8)-[:Interested_in]->(t2),
 
-(u1)-[:Interested_in]->(t1),
-(u1)-[:Interested_in]->(t9),
-(u2)-[:Interested_in]->(t10),
-(u4)-[:Interested_in]->(t7),
-(u4)-[:Interested_in]->(t6),
-(u4)-[:Interested_in]->(t5),
-(u5)-[:Interested_in]->(t3),
-(u5)-[:Interested_in]->(t1),
-(u6)-[:Interested_in]->(t9),
-(u6)-[:Interested_in]->(t1),
-(u7)-[:Interested_in]->(t9),
-(u7)-[:Interested_in]->(t1),
-(u8)-[:Interested_in]->(t9),
-(u8)-[:Interested_in]->(t2),
-
-(u1)-[:Works_on]->(p1),
-(u1)-[:Works_on]->(p5),
-(u2)-[:Works_on]->(p5),
-(u3)-[:Works_on]->(p2),
-(u4)-[:Works_on]->(p4),
-(u5)-[:Works_on]->(p6),
-(u7)-[:Works_on]->(p1),
-(u8)-[:Works_on]->(p5),
-(u8)-[:Works_on]->(p3)
+(u1)-[:Works_on]->(p1), (u1)-[:Works_on]->(p5), (u2)-[:Works_on]->(p5), (u3)-[:Works_on]->(p2), (u4)-[:Works_on]->(p4), (u5)-[:Works_on]->(p6), (u7)-[:Works_on]->(p1), (u8)-[:Works_on]->(p5), (u8)-[:Works_on]->(p3) 
 
 return *
 
+Requête 1 : Collègues ayant les mêmes centres d'intérêts 
 
 MATCH 
 (t1:Topic)<-[:Interested_in]-(u1:User {nom:"Voldi"})
 -[:Works_for]->(c:Company)<-[:Works_for]-(u2:User)-[:Interested_in]->(t2:Topic) 
 WHERE t1.nom = t2.nom
-RETURN u2.nom as nom, count(t1) as score, collect(t1.nom) as interests
+RETURN u2.nom as name, count(t1) as score, collect(t1.nom) as interests
+
+
+Requête 2 : Personnes ayant les mêmes centres d'intérêts et leurs entreprises
 
 MATCH 
 (u1:User {nom:"Voldi"})-[:Interested_in]->(t:Topic)<-[:Interested_in]-(u2:User)-[:Works_for]->(c: Company)
-RETURN u2.nom as nom, count(t) as score, collect(t.nom) as interests, c.nom
+RETURN u2.nom as name, count(t) as score, collect(t.nom) as interests, c.nom
+
+
+Requête 3 : Collègues de travail ou collègues de collègues
+
+MATCH
+path=(u1:User {nom:"Dora"})-[:Works_on]->(p1:Project)<-[:Works_on]-(u2:User)
+OPTIONAL MATCH (u1:User)-[:Interested_in]->(t:Topic)<-[:Interested_in]-(u2:User)
+RETURN u2.nom as name, count(t) as score, collect(t.nom) as interests, length(path)/2 as distance
+ORDER BY score desc
+UNION
+MATCH
+path=(u1:User {nom:"Dora"})-[:Works_on]->(p1:Project)<-[:Works_on]-(u2:User)-[:Works_on]->(p2:Project)<-[:Works_on]-(u3:User)
+OPTIONAL MATCH (u1:User)-[:Interested_in]->(t:Topic)<-[:Interested_in]-(u3:User)
+RETURN u3.nom as name, count(t) as score, collect(t.nom) as interests, length(path)/2 as distance
+ORDER BY score desc
+
+
+Requête 4 : Ajout des relations Works_with
+
+MATCH (u1:User)-[:Works_on]->(p:Project)<-[:Works_on]-(u2:User)
+WHERE u1 <> u2
+CREATE (u1)-[:Worked_with]->(u2);
+
+
+Requête 5 : Réinterprétation de la requête 3 avec les relations Worked_with
+
+MATCH
+path=(u1:User {nom:"Dora"})-[:Worked_with*1..2]-(u2:User)
+WHERE u1 <> u2
+OPTIONAL MATCH (u1:User)-[:Interested_in]->(t:Topic)<-[:Interested_in]-(u2:User)
+RETURN DISTINCT u2.nom as name, count(DISTINCT t) as score, collect(DISTINCT t.nom) as interests, min(length(path)) as distance
+ORDER BY score desc
