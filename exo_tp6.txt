@@ -1,0 +1,37 @@
+1)
+match (n:User) where toLower(n.name) =~ '.*neo4j.*' or toLower(n.name) =~ '.*graph.*' return n
+union
+match (n:Tweet) where toLower(n.text) =~ '.*neo4j.*' or toLower(n.text) =~ '.*graph.*' return n
+
+2)
+match (t:Tweet) return id(t), t.favorites order by t.favorites desc
+
+3)
+match (u:User {name: 'Neo4J'})-[p:POSTS]->(t:Tweet) where t.created_at.year = 2021 return count(t)
+
+4)
+match (h:Hashtag)<-[:TAGS]-(t:Tweet) return h.name, collect(id(t)) as tweets
+
+5)
+match (u1:User) where count{(u1:User)<-[f:FOLLOWS]-(u2:User)}>2 return u1.name, count{(u1:User)<-[f:FOLLOWS]-(u2:User)} as nb_followers
+
+6)
+match (u1:User) where not (u1)-[:FOLLOWS]->(:User {name: "Neo4J"}) return u1.name
+
+7)
+match (u1:User) where not (u1)<-[:FOLLOWS]-(:User {name: "Neo4J"}) return u1.name
+
+8)
+match (u:User) where not (u:User)-[:POSTS]->(:Tweet)-[:USING]->(:Source {name: 'Twitter Web App'}) return u.name
+
+9)
+match (l:Link) where not l.url starts with 'https' return l.url
+
+10)
+match (u:User) optional match (u)-[:POSTS]->(t:Tweet)-[:CONTAINS]->(l:Link) where l.url =~ '.*github.*' return u.name, count(t)
+
+11)
+match (u1:User) optional match path = (u1)-[:FOLLOWS]->(u2:User {name: 'Neo4J'}) return u1.name, path is not null as follows_neo4j
+
+12)
+match (t:Tweet)-[:USING]->(s:Source) where s.name IN ['Twitter for iPhone', 'TweetDeck', 'TweetApp'] return id(t), t.text
