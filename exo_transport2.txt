@@ -1,0 +1,14 @@
+1)
+match (s1:STATION {ville: "Paris"})-[:byTrain]-(s2:STATION) return s2.name;
+
+2)
+match (s1:STATION {ville: "Paris"})-[t:byTrain|byCar|byBus]-(s2:STATION) return s2.name, collect(t.type);
+
+3)
+match path=(s1:STATION {name: "Orleans"})-[*..10]-(s2:STATION {name: "Tours"}) return length(path) order by length(path) asc limit 4;
+match path=(s1:STATION {name: "Orleans"})-[*]-(s2:STATION {name: "Tours"}) return length(path) limit 4;
+
+4)
+match path=(s1:STATION {name: "Orleans"})-[:byCar|byTrain*..10]-(s2:STATION {name: "Tours"}) return length(path) order by length(path) asc limit 4;
+
+5)
