@@ -8,3 +8,7 @@ match path=(s1:STATION)-[*]->(s2:STATION) where s1.ville=s2.ville return s1.vill
 match path=(s1:STATION)-[*]->(s2:STATION) where s1.ville="Orleans" or s2.ville="Orleans" return length(path), [station IN nodes(path) | station.name] AS stations_intermediaires order by length(path) asc limit 5
 
 4)
+match path=(s1:STATION {ville:"Orleans"})-[*]->(s2:STATION) return length(path), s2.name
+
+5)
+match path=(s1:STATION {ville:"Orleans"})-[t:byTrain]->(s2:STATION) return s1.name, s2.name, t.distance
