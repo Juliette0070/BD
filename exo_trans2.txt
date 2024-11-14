@@ -1,0 +1,10 @@
+1)
+match path=(s1:STATION)-[*]->(s2:STATION) where s1.ville=s2.ville return length(path), [station IN nodes(path) | station.name] AS stations_intermediaires
+
+2)
+match path=(s1:STATION)-[*]->(s2:STATION) where s1.ville=s2.ville return s1.ville, count(path) as nb_trajets
+
+3)
+match path=(s1:STATION)-[*]->(s2:STATION) where s1.ville="Orleans" or s2.ville="Orleans" return length(path), [station IN nodes(path) | station.name] AS stations_intermediaires order by length(path) asc limit 5
+
+4)
