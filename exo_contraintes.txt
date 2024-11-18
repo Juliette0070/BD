@@ -70,6 +70,9 @@ CREATE (monet)-[:A_NATIONALITE {annee: 1840}]->(france);
 MATCH (film1:Oeuvre {titre: 'Inception'}), (usa:Pays {nom: 'États-Unis'})
 CREATE (film1)-[:ORIGINE]->(usa);
 
+MATCH (film2:Oeuvre {titre: 'Interstellar'}), (usa:Pays {nom: 'États-Unis'})
+CREATE (film2)-[:ORIGINE]->(usa);
+
 MATCH (film3:Oeuvre {titre: 'Le Voyage de Chihiro'}), (japon:Pays {nom: 'Japon'})
 CREATE (film3)-[:ORIGINE]->(japon);
 
@@ -230,3 +233,4 @@ MATCH (p:Pays)<-[:ORIGINE]-(o:Oeuvre) RETURN p.nom AS Pays, COLLECT(o.titre) AS 
 MATCH (o:Oeuvre)-[:ORIGINE]->(p:Pays) RETURN o.titre AS Oeuvre, COUNT(DISTINCT p) AS NombrePays;
 
 9)
+MATCH (p:Pays)<-[:ORIGINE]-(f:Oeuvre {type_oeuvre: 'Film'}) RETURN p.nom AS Pays, COUNT(f) AS NombreFilms, COLLECT(f.titre) AS Films, COLLECT(f.annee_parution) AS Annees, COLLECT(f.budget) AS Budgets ORDER BY NombreFilms DESC LIMIT 5;
