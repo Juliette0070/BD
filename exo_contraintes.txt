@@ -16,26 +16,26 @@ CREATE (:Utilisateur {id_utilisateur: 2, nom: 'Bob'});
 CREATE (:Utilisateur {id_utilisateur: 3, nom: 'Charlie'});
 
 // Création des œuvres (films)
-CREATE (film1:Oeuvre {titre: 'Inception', annee_parution: 2010, genre: 'Sci-Fi', langue: 'Anglais', budget: 160000000});
-CREATE (film2:Oeuvre {titre: 'Interstellar', annee_parution: 2014, genre: 'Sci-Fi', langue: 'Anglais', budget: 165000000});
-CREATE (film3:Oeuvre {titre: 'Le Voyage de Chihiro', annee_parution: 2001, genre: 'Animation', langue: 'Japonais', budget: 19000000});
+CREATE (film1:Oeuvre {titre: 'Inception', annee_parution: 2010, genre: 'Sci-Fi', langue: 'Anglais', budget: 160000000, type_oeuvre: 'Film'});
+CREATE (film2:Oeuvre {titre: 'Interstellar', annee_parution: 2014, genre: 'Sci-Fi', langue: 'Anglais', budget: 165000000, type_oeuvre: 'Film'});
+CREATE (film3:Oeuvre {titre: 'Le Voyage de Chihiro', annee_parution: 2001, genre: 'Animation', langue: 'Japonais', budget: 19000000, type_oeuvre: 'Film'});
 
 // Création des œuvres (tableaux)
-CREATE (tableau1:Oeuvre {titre: 'La Nuit étoilée', annee_parution: 1889, dimensions: '73.7x92.1 cm', technique_utilisee: 'Huile sur toile'});
-CREATE (tableau2:Oeuvre {titre: 'Impression, Soleil Levant', annee_parution: 1872, dimensions: '48x63 cm', technique_utilisee: 'Huile sur toile'});
+CREATE (tableau1:Oeuvre {titre: 'La Nuit étoilée', annee_parution: 1889, dimensions: '73.7x92.1 cm', technique_utilisee: 'Huile sur toile', type_oeuvre: 'Tableau'});
+CREATE (tableau2:Oeuvre {titre: 'Impression, Soleil Levant', annee_parution: 1872, dimensions: '48x63 cm', technique_utilisee: 'Huile sur toile', type_oeuvre: 'Tableau'});
 
 // Création des séries en tant qu’œuvres
-CREATE (serie1:Oeuvre {titre: 'Inception - La Série', annee_parution: 2023, genre: 'Sci-Fi', langue: 'Anglais'});
-CREATE (serie2:Oeuvre {titre: 'Le Voyage de Chihiro - La Série', annee_parution: 2023, genre: 'Animation', langue: 'Japonais'});
+CREATE (serie1:Oeuvre {titre: 'Inception - La Série', annee_parution: 2023, genre: 'Sci-Fi', langue: 'Anglais', type_oeuvre: 'Serie'});
+CREATE (serie2:Oeuvre {titre: 'Le Voyage de Chihiro - La Série', annee_parution: 2023, genre: 'Animation', langue: 'Japonais', type_oeuvre: 'Serie'});
 
 // Création des épisodes d'une série
-CREATE (ep1:Oeuvre {titre: 'Inception - Épisode 1', saison: 1, numero_episode: 1});
-CREATE (ep2:Oeuvre {titre: 'Inception - Épisode 2', saison: 1, numero_episode: 2});
-CREATE (ep3:Oeuvre {titre: 'Inception - Épisode 3', saison: 1, numero_episode: 3});
+CREATE (ep1:Oeuvre {titre: 'Inception - Épisode 1', saison: 1, numero_episode: 1, type_oeuvre: 'Episode'});
+CREATE (ep2:Oeuvre {titre: 'Inception - Épisode 2', saison: 1, numero_episode: 2, type_oeuvre: 'Episode'});
+CREATE (ep3:Oeuvre {titre: 'Inception - Épisode 3', saison: 1, numero_episode: 3, type_oeuvre: 'Episode'});
 
-CREATE (ep4:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 1', saison: 1, numero_episode: 1});
-CREATE (ep5:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 2', saison: 1, numero_episode: 2});
-CREATE (ep6:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 3', saison: 1, numero_episode: 3});
+CREATE (ep4:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 1', saison: 1, numero_episode: 1, type_oeuvre: 'Episode'});
+CREATE (ep5:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 2', saison: 1, numero_episode: 2, type_oeuvre: 'Episode'});
+CREATE (ep6:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 3', saison: 1, numero_episode: 3, type_oeuvre: 'Episode'});
 
 // Relations entre les artistes et les œuvres
 MATCH (nolan:Artiste {nom: 'Nolan', prenom: 'Christopher'}), (film1:Oeuvre {titre: 'Inception'})
@@ -118,6 +118,35 @@ CREATE (serie2)-[:A_EPISODE]->(ep4),
 MATCH (alice:Utilisateur {id_utilisateur: 1}), (film1:Oeuvre {titre: 'Inception'})
 CREATE (alice)-[:A_VISIONNE {note: 8}]->(film1);
 
+// Création des relations entre les utilisateurs et les œuvres avec des notes
+// Utilisateur Alice note "Inception"
+MATCH (alice:Utilisateur {id_utilisateur: 1}), (film1:Oeuvre {titre: 'Inception'})
+CREATE (alice)-[:A_NOTE {note: 8}]->(film1);
+
+// Utilisateur Bob note "Le Voyage de Chihiro"
+MATCH (bob:Utilisateur {id_utilisateur: 2}), (film3:Oeuvre {titre: 'Le Voyage de Chihiro'})
+CREATE (bob)-[:A_NOTE {note: 9}]->(film3);
+
+// Utilisateur Charlie note "Interstellar"
+MATCH (charlie:Utilisateur {id_utilisateur: 3}), (film2:Oeuvre {titre: 'Interstellar'})
+CREATE (charlie)-[:A_NOTE {note: 7}]->(film2);
+
+// Utilisateur Alice note "Impression, Soleil Levant"
+MATCH (alice:Utilisateur {id_utilisateur: 1}), (tableau2:Oeuvre {titre: 'Impression, Soleil Levant'})
+CREATE (alice)-[:A_NOTE {note: 10}]->(tableau2);
+
+// Utilisateur Bob note "La Nuit étoilée"
+MATCH (bob:Utilisateur {id_utilisateur: 2}), (tableau1:Oeuvre {titre: 'La Nuit étoilée'})
+CREATE (bob)-[:A_NOTE {note: 9}]->(tableau1);
+
+// Utilisateur Alice note "Inception - La Série - Épisode 1"
+MATCH (alice:Utilisateur {id_utilisateur: 1}), (ep1:Oeuvre {titre: 'Inception - Épisode 1'})
+CREATE (alice)-[:A_NOTE {note: 8}]->(ep1);
+
+// Utilisateur Bob note "Le Voyage de Chihiro - La Série - Épisode 1"
+MATCH (bob:Utilisateur {id_utilisateur: 2}), (ep4:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 1'})
+CREATE (bob)-[:A_NOTE {note: 9}]->(ep4);
+
 
 
 
@@ -164,3 +193,25 @@ RETURN serie.titre AS Serie, ep1.titre AS Episode1, ep2.titre AS Episode2;
 MATCH (ep:Oeuvre)-[:A_ORIGINE]->(s:Oeuvre)
 WHERE NOT EXISTS((s)-[:A_ORIGINE]->(:Oeuvre))
 RETURN ep.titre AS Episode, s.titre AS Serie;
+
+
+
+// Suppression des contraintes
+DROP CONSTRAINT pays_unique IF EXISTS;
+DROP CONSTRAINT artiste_unique IF EXISTS;
+DROP CONSTRAINT utilisateur_unique IF EXISTS;
+DROP CONSTRAINT oeuvre_unique IF EXISTS;
+
+
+
+// Requêtes sur la base
+1)
+MATCH (serie:Oeuvre {type_oeuvre: 'Serie'})-[:A_EPISODE]->(ep:Oeuvre) RETURN serie.titre AS Serie, COUNT(DISTINCT ep.saison) AS NombreSaisons, COUNT(ep) AS NombreEpisodes;
+
+2)
+MATCH (film:Oeuvre {type_oeuvre: 'Film'})<-[:INSPIRE_PAR]-(serie:Oeuvre {type_oeuvre: 'Serie'})-[:A_EPISODE]->(ep:Oeuvre{type_oeuvre: 'Episode'}) RETURN ep.titre, serie.titre AS Serie, film.titre AS Film;
+
+3)
+MATCH (u:Utilisateur)-[n:A_NOTE]->(o:Oeuvre) RETURN u.nom AS Utilisateur, COUNT(DISTINCT n) AS NombreNotes ORDER BY NombreNotes DESC LIMIT 5;
+
+4)
