@@ -1,0 +1,166 @@
+// Création des pays
+CREATE (:Pays {nom: 'France'});
+CREATE (:Pays {nom: 'États-Unis'});
+CREATE (:Pays {nom: 'Japon'});
+CREATE (:Pays {nom: 'Pays-Bas'});
+
+// Création des artistes
+CREATE (:Artiste {nom: 'Van Gogh', prenom: 'Vincent', type_artiste: 'Peintre'});
+CREATE (:Artiste {nom: 'Nolan', prenom: 'Christopher', type_artiste: 'Metteur en scène'});
+CREATE (:Artiste {nom: 'Miyazaki', prenom: 'Hayao', type_artiste: 'Metteur en scène'});
+CREATE (:Artiste {nom: 'Monet', prenom: 'Claude', type_artiste: 'Peintre'});
+
+// Création des utilisateurs
+CREATE (:Utilisateur {id_utilisateur: 1, nom: 'Alice'});
+CREATE (:Utilisateur {id_utilisateur: 2, nom: 'Bob'});
+CREATE (:Utilisateur {id_utilisateur: 3, nom: 'Charlie'});
+
+// Création des œuvres (films)
+CREATE (film1:Oeuvre {titre: 'Inception', annee_parution: 2010, genre: 'Sci-Fi', langue: 'Anglais', budget: 160000000});
+CREATE (film2:Oeuvre {titre: 'Interstellar', annee_parution: 2014, genre: 'Sci-Fi', langue: 'Anglais', budget: 165000000});
+CREATE (film3:Oeuvre {titre: 'Le Voyage de Chihiro', annee_parution: 2001, genre: 'Animation', langue: 'Japonais', budget: 19000000});
+
+// Création des œuvres (tableaux)
+CREATE (tableau1:Oeuvre {titre: 'La Nuit étoilée', annee_parution: 1889, dimensions: '73.7x92.1 cm', technique_utilisee: 'Huile sur toile'});
+CREATE (tableau2:Oeuvre {titre: 'Impression, Soleil Levant', annee_parution: 1872, dimensions: '48x63 cm', technique_utilisee: 'Huile sur toile'});
+
+// Création des séries en tant qu’œuvres
+CREATE (serie1:Oeuvre {titre: 'Inception - La Série', annee_parution: 2023, genre: 'Sci-Fi', langue: 'Anglais'});
+CREATE (serie2:Oeuvre {titre: 'Le Voyage de Chihiro - La Série', annee_parution: 2023, genre: 'Animation', langue: 'Japonais'});
+
+// Création des épisodes d'une série
+CREATE (ep1:Oeuvre {titre: 'Inception - Épisode 1', saison: 1, numero_episode: 1});
+CREATE (ep2:Oeuvre {titre: 'Inception - Épisode 2', saison: 1, numero_episode: 2});
+CREATE (ep3:Oeuvre {titre: 'Inception - Épisode 3', saison: 1, numero_episode: 3});
+
+CREATE (ep4:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 1', saison: 1, numero_episode: 1});
+CREATE (ep5:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 2', saison: 1, numero_episode: 2});
+CREATE (ep6:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 3', saison: 1, numero_episode: 3});
+
+// Relations entre les artistes et les œuvres
+MATCH (nolan:Artiste {nom: 'Nolan', prenom: 'Christopher'}), (film1:Oeuvre {titre: 'Inception'})
+CREATE (nolan)-[:DIRIGE]->(film1);
+
+MATCH (nolan:Artiste {nom: 'Nolan', prenom: 'Christopher'}), (film2:Oeuvre {titre: 'Interstellar'})
+CREATE (nolan)-[:DIRIGE]->(film2);
+
+MATCH (miyazaki:Artiste {nom: 'Miyazaki', prenom: 'Hayao'}), (film3:Oeuvre {titre: 'Le Voyage de Chihiro'})
+CREATE (miyazaki)-[:DIRIGE]->(film3);
+
+MATCH (vangogh:Artiste {nom: 'Van Gogh', prenom: 'Vincent'}), (tableau1:Oeuvre {titre: 'La Nuit étoilée'})
+CREATE (vangogh)-[:CREE]->(tableau1);
+
+MATCH (monet:Artiste {nom: 'Monet', prenom: 'Claude'}), (tableau2:Oeuvre {titre: 'Impression, Soleil Levant'})
+CREATE (monet)-[:CREE]->(tableau2);
+
+// Relations de nationalité
+MATCH (vangogh:Artiste {nom: 'Van Gogh', prenom: 'Vincent'}), (paysbas:Pays {nom: 'Pays-Bas'})
+CREATE (vangogh)-[:A_NATIONALITE {annee: 1853}]->(paysbas);
+
+MATCH (nolan:Artiste {nom: 'Nolan', prenom: 'Christopher'}), (usa:Pays {nom: 'États-Unis'})
+CREATE (nolan)-[:A_NATIONALITE {annee: 1970}]->(usa);
+
+MATCH (miyazaki:Artiste {nom: 'Miyazaki', prenom: 'Hayao'}), (japon:Pays {nom: 'Japon'})
+CREATE (miyazaki)-[:A_NATIONALITE {annee: 1941}]->(japon);
+
+MATCH (monet:Artiste {nom: 'Monet', prenom: 'Claude'}), (france:Pays {nom: 'France'})
+CREATE (monet)-[:A_NATIONALITE {annee: 1840}]->(france);
+
+// Relations d'origine des œuvres
+MATCH (film1:Oeuvre {titre: 'Inception'}), (usa:Pays {nom: 'États-Unis'})
+CREATE (film1)-[:ORIGINE]->(usa);
+
+MATCH (film3:Oeuvre {titre: 'Le Voyage de Chihiro'}), (japon:Pays {nom: 'Japon'})
+CREATE (film3)-[:ORIGINE]->(japon);
+
+MATCH (tableau1:Oeuvre {titre: 'La Nuit étoilée'}), (france:Pays {nom: 'France'})
+CREATE (tableau1)-[:ORIGINE]->(france);
+
+// Relations entre films et séries (une série est inspirée d'un film)
+MATCH (film1:Oeuvre {titre: 'Inception'}), (serie1:Oeuvre {titre: 'Inception - La Série'})
+CREATE (serie1)-[:INSPIRE_PAR]->(film1);
+
+MATCH (film3:Oeuvre {titre: 'Le Voyage de Chihiro'}), (serie2:Oeuvre {titre: 'Le Voyage de Chihiro - La Série'})
+CREATE (serie2)-[:INSPIRE_PAR]->(film3);
+
+// Relations entre les épisodes pour garantir l'ordre
+MATCH (ep1:Oeuvre {titre: 'Inception - Épisode 1'}), (ep2:Oeuvre {titre: 'Inception - Épisode 2'})
+CREATE (ep1)-[:SUIVANT]->(ep2);
+
+MATCH (ep2:Oeuvre {titre: 'Inception - Épisode 2'}), (ep3:Oeuvre {titre: 'Inception - Épisode 3'})
+CREATE (ep2)-[:SUIVANT]->(ep3);
+
+MATCH (ep4:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 1'}), (ep5:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 2'})
+CREATE (ep4)-[:SUIVANT]->(ep5);
+
+MATCH (ep5:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 2'}), (ep6:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 3'})
+CREATE (ep5)-[:SUIVANT]->(ep6);
+
+// Relations entre utilisateurs et séries (les utilisateurs ont regardé des épisodes de séries)
+MATCH (alice:Utilisateur {id_utilisateur: 1}), (ep1:Oeuvre {titre: 'Inception - Épisode 1'})
+CREATE (alice)-[:A_VISIONNE {note: 9}]->(ep1);
+
+MATCH (bob:Utilisateur {id_utilisateur: 2}), (ep4:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 1'})
+CREATE (bob)-[:A_VISIONNE {note: 10}]->(ep4);
+
+// Créer les relations entre les séries et leurs épisodes respectifs
+MATCH (serie1:Oeuvre {titre: 'Inception - La Série'}), (ep1:Oeuvre {titre: 'Inception - Épisode 1'}), (ep2:Oeuvre {titre: 'Inception - Épisode 2'}), (ep3:Oeuvre {titre: 'Inception - Épisode 3'})
+CREATE (serie1)-[:A_EPISODE]->(ep1),
+       (serie1)-[:A_EPISODE]->(ep2),
+       (serie1)-[:A_EPISODE]->(ep3);
+
+MATCH (serie2:Oeuvre {titre: 'Le Voyage de Chihiro - La Série'}), (ep4:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 1'}), (ep5:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 2'}), (ep6:Oeuvre {titre: 'Le Voyage de Chihiro - Épisode 3'})
+CREATE (serie2)-[:A_EPISODE]->(ep4),
+       (serie2)-[:A_EPISODE]->(ep5),
+       (serie2)-[:A_EPISODE]->(ep6);
+
+// Création des relations entre les utilisateurs et les œuvres
+MATCH (alice:Utilisateur {id_utilisateur: 1}), (film1:Oeuvre {titre: 'Inception'})
+CREATE (alice)-[:A_VISIONNE {note: 8}]->(film1);
+
+
+
+
+// Contrainte d'unicité sur les noms des pays
+CREATE CONSTRAINT pays_unique IF NOT EXISTS FOR (p:Pays) REQUIRE p.nom IS UNIQUE;
+
+// Contrainte d'unicité sur les noms complets des artistes
+CREATE CONSTRAINT artiste_unique IF NOT EXISTS FOR (a:Artiste) REQUIRE (a.nom, a.prenom) IS UNIQUE;
+
+// Contrainte d'unicité sur les identifiants des utilisateurs
+CREATE CONSTRAINT utilisateur_unique IF NOT EXISTS FOR (u:Utilisateur) REQUIRE u.id_utilisateur IS UNIQUE;
+
+// Contrainte d'unicité sur les titres des œuvres
+CREATE CONSTRAINT oeuvre_unique IF NOT EXISTS FOR (o:Oeuvre) REQUIRE o.titre IS UNIQUE;
+
+
+
+
+// Requêtes de vérification des contraintes
+// Vérifie si un utilisateur a noté deux fois le même film
+MATCH (u:Utilisateur)-[r:A_VISIONNE]->(f:Oeuvre)
+WITH u, f, COUNT(r) AS nbNotes
+WHERE nbNotes > 1
+RETURN u.nom AS Utilisateur, f.titre AS Film, nbNotes;
+
+// Vérifie si un utilisateur a plusieurs nationalités
+MATCH (u:Utilisateur)-[:A_NATIONALITE]->(p:Pays)
+WITH u, COUNT(DISTINCT p) AS nbNationalites
+WHERE nbNationalites > 1
+RETURN u.nom AS Utilisateur, nbNationalites;
+
+// Vérifie si un film ou un tableau a plus d'un metteur-en-scène ou peintre
+MATCH (o:Oeuvre)-[r:DIRIGE|CREE]->(a:Artiste)
+WITH o, COUNT(r) AS nbArtistes
+WHERE nbArtistes > 1
+RETURN o.titre AS Oeuvre, nbArtistes;
+
+// Vérifie si les épisodes dans une série ne respectent pas l'ordre topologique
+MATCH (serie:Oeuvre)-[:A_EPISODE]->(ep1:Oeuvre)-[:SUIVANT]->(ep2:Oeuvre)
+WHERE ep1.numero_episode >= ep2.numero_episode
+RETURN serie.titre AS Serie, ep1.titre AS Episode1, ep2.titre AS Episode2;
+
+// Vérifie si un épisode de série n'est pas lié à un film d'origine
+MATCH (ep:Oeuvre)-[:A_ORIGINE]->(s:Oeuvre)
+WHERE NOT EXISTS((s)-[:A_ORIGINE]->(:Oeuvre))
+RETURN ep.titre AS Episode, s.titre AS Serie;
