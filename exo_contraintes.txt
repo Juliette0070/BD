@@ -233,4 +233,4 @@ MATCH (p:Pays)<-[:ORIGINE]-(o:Oeuvre) RETURN p.nom AS Pays, COLLECT(o.titre) AS 
 MATCH (o:Oeuvre)-[:ORIGINE]->(p:Pays) RETURN o.titre AS Oeuvre, COUNT(DISTINCT p) AS NombrePays;
 
 9)
-MATCH (p:Pays)<-[:ORIGINE]-(f:Oeuvre {type_oeuvre: 'Film'}) RETURN p.nom AS Pays, COUNT(f) AS NombreFilms, COLLECT(f.titre) AS Films, COLLECT(f.annee_parution) AS Annees, COLLECT(f.budget) AS Budgets ORDER BY NombreFilms DESC LIMIT 5;
+MATCH (p:Pays)<-[:ORIGINE]-(f:Oeuvre {type_oeuvre: 'Film'}) RETURN p.nom AS Pays, COUNT(f) AS NombreFilms, COLLECT(f.titre) AS Films, COLLECT(f.annee_parution) AS Annees, COLLECT(f.budget) AS Budgets, COLLECT(f.langue) AS Langues, COLLECT(f.genre) AS Genres ORDER BY NombreFilms DESC LIMIT 5;
