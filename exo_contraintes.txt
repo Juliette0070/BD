@@ -215,3 +215,18 @@ MATCH (film:Oeuvre {type_oeuvre: 'Film'})<-[:INSPIRE_PAR]-(serie:Oeuvre {type_oe
 MATCH (u:Utilisateur)-[n:A_NOTE]->(o:Oeuvre) RETURN u.nom AS Utilisateur, COUNT(DISTINCT n) AS NombreNotes ORDER BY NombreNotes DESC LIMIT 5;
 
 4)
+MATCH (f:Oeuvre {type_oeuvre: 'Film'})<-[n:A_NOTE]-(u:Utilisateur) RETURN f.titre AS Film, COUNT(n) AS NombreNotes ORDER BY NombreNotes DESC LIMIT 5;
+
+5)
+MATCH (f:Oeuvre {type_oeuvre: 'Film'})<-[n:A_NOTE]-(u:Utilisateur) RETURN f.titre AS Film, AVG(n.note) AS MoyenneNotes ORDER BY MoyenneNotes ASC LIMIT 5;
+
+6)
+MATCH (p:Pays)<-[:A_NATIONALITE]-(a:Artiste) RETURN p.nom AS Pays, COLLECT(a.nom) AS Artistes;
+
+7)
+MATCH (p:Pays)<-[:ORIGINE]-(o:Oeuvre) RETURN p.nom AS Pays, COLLECT(o.titre) AS Oeuvres;
+
+8)
+MATCH (o:Oeuvre)-[:ORIGINE]->(p:Pays) RETURN o.titre AS Oeuvre, COUNT(DISTINCT p) AS NombrePays;
+
+9)
