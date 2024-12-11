@@ -1,0 +1,86 @@
+// Exo 1
+
+db.salles.aggregate([{$match: {capacite: { $gt: 50 }}},
+    {$project: {ville: "$adresse.ville",grande: { $cond: { if: { $gt: ["$capacite", 1000] }, then: true, else: false }}}},
+    {$group: {_id: "$ville", grande: { $max: "$grande" }}},
+    {$project: {_id: 0,ville: "$_id",grande: 1}}
+])
+
+// Exo 2
+
+db.salles.aggregate([{ $project: {nom: 1,avant_extension: "$capacite",apres_extension: { $add: ["$capacite", 100] }}}])
+
+// Exo 3
+
+db.salles.aggregate([{$project: {numDepartement: { $substr: ["$adresse.codePostal", 0, 2] }, capacite: "$capacite", nom: "$nom"}},
+    {$group: {_id: "$numDepartement", capaciteTotale: { $sum: "$capacite" }}},
+    {$sort: {_id: 1}}
+])
+
+// Exo 4
+
+db.salles.aggregate([{$unwind: "$styles"},
+    {$group: {_id: "$styles", nbSalles: { $sum: 1 }}},
+    {$sort: {_id: 1}},
+    {$project: {_id: 0,style: "$_id",nbSalles: 1}}
+])
+
+// Exo 5
+
+db.salles.aggregate([{$bucket: {groupBy: "$capacite",boundaries: [100, 500, 5000],default: "autres",output: {nombre_de_salles: { $sum: 1 }}}},
+    {$project: {_id: 0,capacite_range: "$_id",nombre_de_salles: 1}}
+])
+
+// Exo 6
+
+db.salles.aggregate([{$project: {_id: 0,nom: 1,avis_excellents: { $filter: { input: "$avis", as: "avis", cond: { $eq: ["$$avis.note", 10] } }}}}])
+
+// Exo 7
+
+db.salles.aggregate([{$group: {_id: "$adresse.ville", nbSalles: { $sum: 1 }}},
+    {$sort: {nbSalles: -1}},
+    {$project: {_id: 0,ville: "$_id",nbSalles: 1}}
+])
+
+// Exo 8
+
+db.salles.aggregate([{$unwind: "$styles"},
+    {$sortByCount: "$styles"}
+])
+
+// Exo 9
+
+db.salles.aggregate([{$addFields: {moyenne: { $avg: "$avis.note" }}},
+    {$match: {moyenne: { $gt: 8 }}},
+    {$project: {_id: 0,nom: 1,moyenne: 1}}
+])
+
+// Exo 10
+
+db.salles.aggregate([{$match: {capacite: { $lt: 200 }}},
+    {$project: {_id: 0,nom: 1,capacite: 1}}
+])
+
+// Exo 11
+
+db.salles.aggregate([{$project: {_id: 0,nom: 1,capacite: 1,taille: { $cond: { if: { $lt: ["$capacite", 100] }, then: "petite", else: {$cond: { if: { $lte: ["$capacite", 500] }, then: "moyenne", else: "grande" }}}}}}])
+
+// Exo 12
+
+db.salles.aggregate([{$project: {_id: 0,ville: "$adresse.ville",capacite: 1}},
+    {$group: {_id: "$ville", capaciteMoyenne: { $avg: "$capacite" }}},
+    {$sort: {capaciteMoyenne: -1}},
+    {$project: {_id: 0,ville: "$_id",capaciteMoyenne: 1}}
+])
+
+
+
+// Exo 17
+
+db.salles.aggregate([{$unwind: "$styles"},
+    {$addFields: {moyenne_notes: { $avg: "$avis.note" }}},
+    {$group: {_id: {ville: "$adresse.ville",style: "$styles"}, nombre_de_salles: { $sum: 1 }, note_moyenne: { $avg: "$moyenne_notes" }}},
+    {$sort: {"_id.ville": 1,nombre_de_salles: -1,note_moyenne: -1}},
+    // {$group: {_id: "$_id.ville", style: { $first: "$_id.style" }, nombre_de_salles: { $first: "$nombre_de_salles" }, note_moyenne: { $first: "$note_moyenne" }}},
+    // {$project: {_id: 0,ville: "$_id",style: 1,nombre_de_salles: 1,note_moyenne: 1}}
+])
