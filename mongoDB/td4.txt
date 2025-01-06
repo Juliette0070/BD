@@ -1,0 +1,59 @@
+db.carts.updateOne(
+    { _id: 1001, state: "active" },
+    { 
+        $set: { modifiedOn: new Date() },
+        $push: { 
+            products: { 
+                _id: 1,
+                quantity: 2,
+                name: "Chaussures JC",
+                price: 100,
+            }
+        }
+    },
+    { upsert: true }
+);
+
+db.inventories.updateOne(
+    { _id: 1, quantity: { $gte: 2 } },
+    {
+        $inc: { quantity: -2 },
+        $push: { 
+            reservations: { 
+                _id: 1001,
+                quantity: 2,
+                createdOn: new Date()
+            }
+        }
+    }
+);
+
+
+db.carts.updateOne(
+    { _id: 1001, state: "active", "products._id": 1 },
+    { 
+        $set: { modifiedOn: new Date(), "products.$.quantity": 4 }
+    }
+);
+
+var oldQuantity = 2;
+var newQuantity = 4;
+var delta = newQuantity - oldQuantity;
+
+db.inventories.updateOne(
+    { _id: 1, "reservations._id": 1001, quantity: { $gte: delta } },
+    {
+        $inc: { quantity: -delta },
+        $set: { "reservations.$.quantity": newQuantity, modifiedOn: new Date() }
+    }
+);
+
+var delta = oldQuantity - newQuantity;
+
+db.inventories.updateOne(
+    { _id: 1, "reservations._id": 1001 },
+    {
+        $inc: { quantity: delta },
+        $set: { "reservations.$.quantity": newQuantity, modifiedOn: new Date() }
+    }
+);
