@@ -43,3 +43,134 @@ if (dispo) {
 }
 
 db.sessions.find({theaterId: 1, name: "Concert de jazz"})
+
+
+// supprimer la réservation
+var stillReserved = db.sessions.find({theaterId: 1, name: "Concert de jazz", reservations: {seats: [[1, 0], [1, 1]], price: 20, total: 40}}).count() == 1
+if (stillReserved) {
+    db.sessions.updateOne({theaterId: 1, name: "Concert de jazz"}, {
+        $set: {
+            "seats.1.0": 0,
+            "seats.1.1": 0
+        },
+        $pull: {
+            reservations: {
+                seats: [[1, 0], [1, 1]],
+                price: 20,
+                total: 40
+            }
+        },
+        $inc: {
+            seatsAvailable: 2
+        }
+    })
+}
+
+
+db.createCollection("cart")
+
+db.cart.insertOne({
+    _id: 1,
+    state: "active",
+    total: 0,
+    reservations: [],
+    createdOn: ISODate("2025-01-01T12:00:00Z"),
+    modifiedOn: ISODate("2025-01-01T12:00:00Z")
+})
+
+db.cart.updateOne({_id: 1}, {
+    $push: {
+        reservations: {
+            seats: [[1, 0], [1, 1]],
+            price: 20,
+            total: 40,
+            session: {theaterId: 1, name: "Concert de jazz"}
+        }
+    },
+    $inc: {
+        total: 40
+    },
+    $set: {
+        modifiedOn: new Date()
+    }
+})
+
+
+// 5
+
+var seats = [[1, 0], [1, 1], [1, 2]]
+
+var dispo = db.sessions.find({theaterId: 1, name: "Concert de jazz", $or: seats.map(s => ({[`seats.${s[0]}.${s[1]}`]: 0}))}).count() == 1
+
+if (dispo) {
+    db.sessions.updateOne({theaterId: 1, name: "Concert de jazz"}, {
+        $set: seats.reduce((acc, s) => {
+            acc[`seats.${s[0]}.${s[1]}`] = 1
+            return acc
+        }, {}),
+        $push: {
+            reservations: {
+                seats: seats,
+                price: 20,
+                total: 20 * seats.length
+            }
+        },
+        $inc: {
+            seatsAvailable: seats.length * -1
+        }
+    })
+}
+
+db.sessions.find({theaterId: 1, name: "Concert de jazz"})
+
+db.cart.updateOne({_id: 1}, {
+    $push: {
+        reservations: {
+            seats: seats,
+            price: 20,
+            total: 20 * seats.length,
+            session: {theaterId: 1, name: "Concert de jazz"}
+        }
+    },
+    $inc: {
+        total: 20 * seats.length
+    },
+    $set: {
+        modifiedOn: new Date()
+    }
+})
+
+db.cart.find({_id: 1})
+
+db.cart.updateOne({_id: 1}, {
+    $set: {
+        state: "checkout"
+        modifiedOn: new Date()
+    }
+})
+
+db.createCollection("receipts")
+
+db.receipts.insertOne({
+    _id: 1,
+    cartID: 1,
+    total: 60,
+    createdOn: new Date()
+})
+
+db.sessions.updateOne({theaterId: 1, name: "Concert de jazz"}, {
+    $pull: {
+        reservations: {
+            seats: seats,
+            price: 20,
+            total: 20 * seats.length
+        }
+    },
+})
+
+db.cart.updateOne({_id: 1}, {
+    $set: {
+        state: "done",
+        modifiedOn: new Date()
+    }
+})
